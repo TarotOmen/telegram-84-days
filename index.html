@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f3efe7">
+<title>ТВОИ 12 НЕДЕЛЬ. 84 ДНЯ К ЦЕЛИ</title>
+<style>
+:root{--bg:#f3efe7;--card:#fffdf8;--ink:#171717;--muted:#918c82;--line:#ddd7cc;--sticker:#e8e3d8;--miss:#d9b6b6;--done:#cbe0cb;--result:#bad8ed;--plan:#cbd8ef;--gold:#f0c85b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{-webkit-user-select:none;user-select:none}
+button,input,textarea{font:inherit}
+input,textarea{-webkit-user-select:text;user-select:text}
+.app{width:min(520px,100%);margin:auto;min-height:100vh;padding:18px 15px 30px}
+header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.k{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:800}
+h1{font-size:31px;line-height:.95;margin:5px 0 0;letter-spacing:-.04em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:15px;margin-bottom:12px}
+.goal{font-size:17px;font-weight:700;margin-top:5px;line-height:1.2}
+.editGoal{margin-top:8px;border:0;background:transparent;padding:0;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.08em}
+.startInfo{margin-top:12px;color:var(--muted);font-size:11px}
+.startInfo b{color:var(--ink);font-weight:700}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:11px}
+.bar{height:7px;background:#e5e0d7;border-radius:99px;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#181818;border-radius:99px;transition:width .3s}
+.statsTop{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}
+.statTop{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.statTop b{font-size:22px;display:block}
+.statTop span{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.statTop.flame b{color:#d6a63d}
+.pay{background:#fff4d9;border:1px solid #e4c76e;border-radius:20px;padding:15px;margin-bottom:14px}
+.payTitle{font-size:15px;font-weight:900;margin-bottom:4px}
+.payText{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.payBtns{display:flex;gap:8px}
+.payBtn{flex:1;border:0;border-radius:14px;padding:13px 8px;font-weight:900;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.payBtn.dark{background:#171717;color:#fff;border-color:#171717}
+.legend{font-size:11px;color:var(--muted);padding:9px 2px 13px;line-height:1.8}
+.legend span{white-space:nowrap;margin-right:8px}
+.weeks{display:flex;flex-direction:column;gap:10px}
+.week{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:11px}
+.week.locked{opacity:.72}
+.weekHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px}
+.weekTitle{font-size:11px;letter-spacing:.1em;font-weight:900;color:var(--ink);white-space:nowrap}
+.weekGoal{flex:1;min-width:0;border:1px solid var(--line);background:#f7f4ee;border-radius:10px;padding:7px 9px;font-size:11px;color:var(--ink)}
+.weekGoal::placeholder{color:#aaa}
+.weekGoal:disabled{opacity:.55}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.day{aspect-ratio:1;border:0;padding:0;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;touch-action:none;cursor:pointer;color:var(--ink)}
+.day.future{background:var(--sticker);color:#8a857c}
+.day.missed{background:var(--miss)}
+.day.done{background:var(--done)}
+.day.result{background:var(--result)}
+.day.planned{background:var(--plan)}
+.day.locked{background:#eeeae2;color:#aaa;cursor:pointer}
+.day.today{outline:2px solid #171717;outline-offset:2px}
+.num{position:absolute;bottom:3px;right:5px;font-size:7px;color:#77736b;font-weight:700}
+.cover{position:absolute;inset:0;background:var(--sticker);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#8a857c;z-index:2;border-radius:12px;will-change:transform}
+.cover.dragging{transition:none}
+.cover.peel{animation:peel .45s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes peel{0%{transform:translate(0,0) rotate(0);opacity:1}35%{transform:translate(-8%,-4%) rotate(-7deg)}100%{transform:translate(-140%,-50%) rotate(-20deg);opacity:0}}
+.weekLock{font-size:12px;color:var(--muted);font-weight:800;margin-right:3px}
+.newCycle{display:block;margin:20px auto 0;border:0;background:transparent;text-decoration:underline;color:var(--muted);font-weight:800;font-size:13px}
+.actions{display:flex;gap:8px;margin-top:13px}.btn{border:0;border-radius:15px;padding:13px 14px;background:#171717;color:white;font-weight:800;cursor:pointer}.btn.alt{background:#e4dfd6;color:#171717}.actions .btn{flex:1}
+.overlay{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;z-index:50}
+.sheet{width:min(520px,100%);background:var(--card);border-radius:27px 27px 0 0;padding:20px 17px calc(24px + env(safe-area-inset-bottom));animation:up .2s ease}
+@keyframes up{from{transform:translateY(35px)}to{transform:none}}
+.sheet h2{margin:0;font-size:25px}.date{color:var(--muted);font-size:12px;margin:4px 0 14px}
+.sheetHint{color:var(--muted);font-size:12px;line-height:1.4;margin:-5px 0 10px}
+textarea,input{width:100%;border:1px solid var(--line);background:#f7f4ee;border-radius:15px;padding:13px;outline:none}
+textarea{min-height:105px;resize:none}
+#dayGoal{margin-bottom:8px}
+.sheetBtns{display:flex;gap:8px;margin-top:9px}.sheetBtns .btn{flex:1}
+.onboard{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;padding:25px 20px}
+.inside{width:min(440px,100%)}
+.inside h2{font-size:50px;line-height:.85;margin:8px 0 15px;letter-spacing:-.06em}
+.inside p{color:var(--muted);line-height:1.45}
+.inside input{margin:4px 0}
+.datePicker{position:relative;width:100%;height:58px;border:1px solid var(--line);background:#f7f4ee;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink);margin-bottom:7px;overflow:hidden}
+.datePicker span{pointer-events:none}
+.datePicker input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.dateLabel{display:block;margin-top:8px;color:var(--muted);font-size:12px;font-weight:800}
+.inside .btn{width:100%;margin-top:7px}
+.hidden{display:none!important}
+.toast{position:fixed;z-index:120;left:50%;bottom:24px;transform:translateX(-50%);background:#171717;color:#fff;padding:10px 15px;border-radius:99px;font-size:13px;white-space:nowrap;display:none}
+.paySheet .price{font-size:30px;font-weight:900;margin:10px 0 2px}
+.paySheet .small{color:var(--muted);font-size:12px;line-height:1.45;margin-bottom:14px}
+.paySheet .sheetBtns{margin-top:0}
+</style>
+</head>
+<body>
+
+<div id="onboard" class="onboard">
+ <div class="inside">
+  <div class="k">МОЯ ЦЕЛЬ</div>
+  <h2>ТВОИ 12<br>НЕДЕЛЬ</h2>
+  <p>Одна цель. 84 дня. Каждый день либо оставляет результат, либо исчезает.</p>
+  <input id="goal" placeholder="Например: заработать 500 000 ₽">
+  <div class="dateLabel">НАЧАТЬ С (ВЫБЕРИ ДАТУ)</div>
+  <div class="datePicker"><span id="startText">23 сент. 2026 г.</span><input id="start" type="date" aria-label="Дата начала"></div>
+  <button class="btn" id="startBtn">НАЧАТЬ</button>
+ </div>
+</div>
+
+<main class="app">
+ <header>
+  <div>
+   <div class="k">МОЯ ЦЕЛЬ</div>
+   <h1>ТВОИ 12 НЕДЕЛЬ.<br>84 ДНЯ К ЦЕЛИ</h1>
+  </div>
+  <div class="k" id="counter">0 / 84</div>
+ </header>
+
+ <section class="card">
+  <div class="k">ЦЕЛЬ</div>
+  <div class="goal" id="goalText">—</div>
+  <button class="editGoal" id="editGoal">ИЗМЕНИТЬ ЦЕЛЬ</button>
+  <div class="startInfo">НАЧАЛО: <b id="startInfoText">—</b></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="meta"><span id="pct">0%</span><span id="left">84 дня осталось</span></div>
+ </section>
+
+ <section class="statsTop">
+  <div class="statTop"><b id="pctBig">0%</b><span>выполнено</span></div>
+  <div class="statTop"><b id="daysBig">0/84</b><span>дней</span></div>
+  <div class="statTop flame"><b id="streakBig">0 🔥</b><span>серия</span></div>
+ </section>
+
+ <section class="pay">
+  <div class="payTitle">Неделя 1 — бесплатно</div>
+  <div class="payText">Недели 2–12 заблокированы. Открой полный цикл разовой оплатой.</div>
+  <div class="payBtns">
+   <button class="payBtn" id="starsBtn">⭐ Stars</button>
+   <button class="payBtn dark" id="tributeBtn">💳 Карта (Tribute)</button>
+  </div>
+ </section>
+
+ <div class="legend">
+  <span>🟦 план 📌</span><span>🩷 пропущен 😔</span><span>🟩 сделал(а) 🙂</span><span>🟨 с заметкой 👍</span>
+ </div>
+
+ <section class="weeks" id="weeks"></section>
+
+ <button class="newCycle" id="newCycle">Начать новый цикл</button>
+ <div class="actions"><button class="btn alt" id="reset">СБРОСИТЬ</button><button class="btn" id="today">СЕГОДНЯ</button></div>
+</main>
+
+<div class="overlay" id="overlay">
+ <div class="sheet">
+  <h2 id="title">День</h2><div class="date" id="date"></div>
+  <div class="sheetHint" id="sheetHint"></div>
+  <input id="dayGoal" placeholder="Цель дня — необязательно">
+  <textarea id="note" placeholder="Что сделал(а) по своей цели?"></textarea>
+  <div class="sheetBtns"><button class="btn alt" id="close">ЗАКРЫТЬ</button><button class="btn" id="save">СОХРАНИТЬ</button></div>
+ </div>
+</div>
+
+<div class="overlay" id="payOverlay">
+ <div class="sheet paySheet">
+  <h2>Открыть недели 2–12</h2>
+  <div class="price">249 ₽</div>
+  <div class="small">Разовая оплата за полный цикл из 12 недель. Без подписки.</div>
+  <div class="sheetBtns">
+   <button class="btn alt" id="payStars">⭐ Stars</button>
+   <button class="btn" id="payTribute">💳 Карта (Tribute)</button>
+  </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tg=window.Telegram?.WebApp; tg?.ready(); tg?.expand();
+const $=id=>document.getElementById(id);
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const parse=s=>{let[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const diff=(a,b)=>Math.floor((parse(b)-parse(a))/86400000);
+const fmt=d=>d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+const fmtShort=d=>d.toLocaleDateString("ru-RU",{day:"numeric",month:"short",year:"numeric"}).replace(" г."," г.");
+
+const STORAGE="84days_final_v1";
+const FREE_DAYS=7, TOTAL=84;
+let data=null, selected=null;
+
+function save(){localStorage.setItem(STORAGE,JSON.stringify(data))}
+function toast(t){$("toast").textContent=t;$("toast").style.display="block";clearTimeout(window._toast);window._toast=setTimeout(()=>$("toast").style.display="none",1800)}
+function todayIndex(){return Math.max(-1,Math.min(TOTAL-1,diff(data.start,iso(new Date()))))}
+function dayDate(i){let d=parse(data.start);d.setDate(d.getDate()+i);return d}
+function streak(){
+ let idx=todayIndex(),n=0;
+ for(let i=idx;i>=0;i--){if(data.days[i]?.done)n++;else break}
+ return n
+}
+function lockedWeek(w){return !data.pro && w>0}
+function lockedDay(i){return !data.pro && i>=FREE_DAYS}
+
+function initOnboard(){
+ const d=iso(new Date());
+ const start=$("start"), textEl=$("startText");
+ start.value=d;
+ textEl.textContent=fmtShort(parse(d));
+ start.addEventListener("change",()=>{
+   if(start.value) textEl.textContent=fmtShort(parse(start.value));
+ });
+}
+
+function makeState(goal,start){
+ return {version:1,goal,start,pro:false,days:Array.from({length:TOTAL},()=>({goal:"",note:"",done:false})),weekGoals:Array(12).fill("")}
+}
+
+function render(){
+ if(!data)return;
+ const idx=todayIndex(), elapsed=Math.max(0,Math.min(TOTAL,idx+1)), left=TOTAL-elapsed;
+ $("goalText").textContent=data.goal||"—";
+ $("startInfoText").textContent=fmt(parse(data.start));
+ $("counter").textContent=elapsed+" / 84";
+ const pct=Math.round(elapsed/TOTAL*100);
+ $("pct").textContent=pct+"%"; $("pctBig").textContent=pct+"%"; $("daysBig").textContent=elapsed+"/84";
+ $("left").textContent=left+" "+(left===1?"день":"дней")+" осталось";
+ $("bar").style.width=(pct)+"%"; $("streakBig").textContent=streak()+" 🔥";
+
+ const weeks=$("weeks"); weeks.innerHTML="";
+ let missed=0,done=0,noted=0,planned=0;
+
+ for(let w=0;w<12;w++){
+  const wl=lockedWeek(w);
+  const wrap=document.createElement("section"); wrap.className="week"+(wl?" locked":"");
+  const head=document.createElement("div"); head.className="weekHead";
+  const title=document.createElement("div"); title.className="weekTitle"; title.textContent="НЕДЕЛЯ "+(w+1)+(wl?" 🔒":"");
+  const wg=document.createElement("input"); wg.className="weekGoal"; wg.placeholder="Цель недели"; wg.value=data.weekGoals[w]||""; wg.disabled=wl;
+  wg.onchange=()=>{data.weekGoals[w]=wg.value.trim();save()};
+  head.append(title,wg); wrap.appendChild(head);
+
+  const grid=document.createElement("div"); grid.className="grid";
+  for(let j=0;j<7;j++){
+   const i=w*7+j, day=data.days[i]||{goal:"",note:"",done:false};
+   const future=i>idx, isToday=i===idx;
+   const b=document.createElement("button"); b.className="day";
+   if(wl){
+    b.classList.add("locked"); b.textContent="🔒";
+    b.onclick=()=>openPay();
+   }else if(day.note){
+    b.classList.add("result"); b.textContent="👍"; noted++;
+    b.onclick=()=>openDay(i);
+   }else if(day.done){
+    b.classList.add("done"); b.textContent="🙂"; done++;
+    b.onclick=()=>openDay(i);
+   }else if(day.goal && future){
+    b.classList.add("planned"); b.textContent="📌"; planned++;
+    b.onclick=()=>openDay(i);
+   }else if(future){
+    b.classList.add("future");
+    const cover=document.createElement("span"); cover.className="cover"; cover.textContent="DAY "+(i+1); b.appendChild(cover);
+    if(isToday) attachPeel(b,cover,i);
+    else b.onclick=()=>openDay(i);
+   }else{
+    b.classList.add("missed"); b.textContent="😔"; missed++;
+    b.onclick=()=>openDay(i);
+   }
+   const num=document.createElement("span"); num.className="num"; num.textContent=i+1; b.appendChild(num);
+   if(isToday)b.classList.add("today");
+   grid.appendChild(b);
+  }
+  wrap.appendChild(grid); weeks.appendChild(wrap);
+ }
+}
+
+function attachPeel(box,cover,i){
+ let sx=0,sy=0,drag=false,moved=false,handled=false;
+ function down(e){
+  if(e.pointerType==="mouse" && e.button!==0)return;
+  sx=e.clientX;sy=e.clientY;drag=true;moved=false;handled=false;
+  cover.classList.add("dragging");
+  e.preventDefault();
+  try{box.setPointerCapture(e.pointerId)}catch(_){}
+ }
+ function move(e){
+  if(!drag)return;
+  const dx=e.clientX-sx,dy=e.clientY-sy;
+  moved=Math.abs(dx)>5||Math.abs(dy)>5;
+  const x=Math.min(0,dx);
+  cover.style.transform=`translate(${x*.7}px,${dy*.12}px) rotate(${x*.035}deg)`;
+  e.preventDefault();
+ }
+ function finish(e){
+  if(!drag||handled)return;
+  handled=true;drag=false;cover.classList.remove("dragging");
+  const dx=e.clientX-sx;
+  if(dx<-45||!moved){
+   cover.classList.add("peel");
+   setTimeout(()=>{data.days[i].done=true;save();render();openDay(i)},420);
+  }else cover.style.transform="";
+  e.preventDefault();
+ }
+ box.addEventListener("pointerdown",down,{passive:false});
+ box.addEventListener("pointermove",move,{passive:false});
+ box.addEventListener("pointerup",finish,{passive:false});
+ box.addEventListener("pointercancel",finish,{passive:false});
+}
+
+function openDay(i){
+ if(lockedDay(i)){openPay();return}
+ selected=i;
+ const day=data.days[i]||{goal:"",note:"",done:false};
+ $("title").textContent="День "+(i+1);
+ $("date").textContent=fmt(dayDate(i));
+ $("dayGoal").value=day.goal||"";
+ $("note").value=day.note||"";
+ const future=i>todayIndex();
+ $("sheetHint").textContent=future?"Можно заранее поставить цель на этот день. Выполнять её можно будет в сам день.":"";
+ $("note").style.display=future?"none":"block";
+ $("save").textContent=future?"СОХРАНИТЬ ЦЕЛЬ":"СОХРАНИТЬ";
+ $("overlay").style.display="flex";
+}
+
+function closeDay(){$("overlay").style.display="none";selected=null}
+function openPay(){$("payOverlay").style.display="flex"}
+function closePay(){$("payOverlay").style.display="none"}
+
+$("startBtn").onclick=()=>{
+ const g=$("goal").value.trim(), start=$("start").value;
+ if(!g)return toast("Напиши цель");
+ if(!start)return toast("Выбери дату");
+ data=makeState(g,start);save();$("onboard").classList.add("hidden");render();
+};
+$("editGoal").onclick=()=>{
+ const g=prompt("Измени главную цель",data.goal||"");
+ if(g&&g.trim()){data.goal=g.trim();save();render()}
+};
+$("save").onclick=()=>{
+ if(selected===null)return;
+ const future=selected>todayIndex();
+ const goal=$("dayGoal").value.trim(), note=future?"":$("note").value.trim();
+ data.days[selected]={goal,note,done:future?false:true};
+ save();closeDay();render();
+ toast(note?"👍 Есть результат":goal?"📌 Цель на день сохранена":"🙂 День отмечен");
+};
+$("close").onclick=closeDay;
+$("overlay").onclick=e=>{if(e.target===$("overlay"))closeDay()};
+$("payOverlay").onclick=e=>{if(e.target===$("payOverlay"))closePay()};
+$("starsBtn").onclick=openPay;
+$("tributeBtn").onclick=openPay;
+$("payStars").onclick=()=>{
+ if(window.PAYMENT_CONFIG?.starsInvoiceLink) tg?.openInvoice(PAYMENT_CONFIG.starsInvoiceLink);
+ else toast("⭐ Ссылка Stars будет подключена через бота");
+};
+$("payTribute").onclick=()=>{
+ if(window.PAYMENT_CONFIG?.tributeUrl) location.href=PAYMENT_CONFIG.tributeUrl;
+ else toast("💳 Ссылка Tribute будет подключена");
+};
+$("today").onclick=()=>{
+ const i=todayIndex(); if(i>=0&&i<TOTAL){const el=document.querySelectorAll(".day")[i];el.scrollIntoView({behavior:"smooth",block:"center"});el.animate([{transform:"scale(1)"},{transform:"scale(1.12)"},{transform:"scale(1)"}],450)}
+};
+$("reset").onclick=()=>{if(confirm("Удалить цель и начать заново?")){localStorage.removeItem(STORAGE);location.reload()}};
+$("newCycle").onclick=()=>{if(confirm("Начать новый цикл с новой целью?")){localStorage.removeItem(STORAGE);location.reload()}};
+
+initOnboard();
+try{data=JSON.parse(localStorage.getItem(STORAGE)||"null")}catch(_){data=null}
+if(data && data.goal && data.start && Array.isArray(data.days)){ $("onboard").classList.add("hidden"); render(); }
+</script>
+</body>
+</html>
