@@ -4,6 +4,7 @@ import pg from "pg";
 
 const { Pool } = pg;
 const app = express();
+const API_STAGING_ONLY = process.env.API_STAGING_ONLY === "true";
 
 const SUPPORT_CHAT_ID = -1003889367656;
 const supportMode = new Set();
@@ -47,6 +48,12 @@ app.use(express.json({
     req.rawBody = Buffer.from(buf);
   }
 }));
+
+app.use((req, res, next) => {
+  if (!API_STAGING_ONLY) return next();
+  if (req.method === "GET" && ["/", "/api/health"].includes(req.path)) return next();
+  return res.sendStatus(503);
+});
 
 const PORT = process.env.PORT || 10000;
 const BOT_TOKEN = process.env.BOT_TOKEN || "";
@@ -2622,6 +2629,13 @@ app.get(
 
 async function start() {
   try {
+    if (API_STAGING_ONLY) {
+      app.listen(PORT, "0.0.0.0", () => {
+        console.log("84 Days staging HTTP server started");
+      });
+      return;
+    }
+
     await initDb();
 
     await resolveTributeProductIds();
