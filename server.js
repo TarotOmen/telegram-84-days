@@ -29,7 +29,8 @@ const LONG_INSTRUCTION = '📖 КАК ПОЛЬЗОВАТЬСЯ «ТВОИ 12 Н�
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
-  if (origin === "https://telegram-84-days-zjzl.onrender.com") {
+  if (origin === "https://telegram-84-days-zjzl.onrender.com" ||
+      origin === "https://telegram-84-days-tmhh.onrender.com") {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
