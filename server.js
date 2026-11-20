@@ -1281,7 +1281,8 @@ async function configureTelegramBot() {
 
         allowed_updates: [
           "message",
-          "callback_query"
+          "callback_query",
+          "pre_checkout_query"
         ]
       }
     );
