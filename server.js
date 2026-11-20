@@ -493,7 +493,9 @@ function verifyTributeSignature(
 ) {
   if (
     !TRIBUTE_API_KEY ||
-    !signature
+    !signature ||
+    !Buffer.isBuffer(rawBody) ||
+    !/^[0-9a-f]{64}$/i.test(signature)
   ) {
     return false;
   }
@@ -505,11 +507,38 @@ function verifyTributeSignature(
         TRIBUTE_API_KEY
       )
       .update(rawBody)
-      .digest("hex");
+      .digest();
+  const received = Buffer.from(signature, "hex");
 
-  return (
-    expected === signature
+  return crypto.timingSafeEqual(
+    expected,
+    received
   );
+}
+
+function requireValidTributeSignature(
+  req,
+  res,
+  next
+) {
+  const signature =
+    req.headers["trbt-signature"] ||
+    req.headers["x-tribute-signature"] ||
+    req.headers["x-tribute-signature-sha256"] ||
+    "";
+
+  if (
+    !TRIBUTE_API_KEY ||
+    !verifyTributeSignature(
+      req.rawBody,
+      signature
+    )
+  ) {
+    return res.sendStatus(401);
+  }
+
+  req.tributeSignature = signature;
+  return next();
 }
 
 function planForProductId(
@@ -683,6 +712,8 @@ async function processTributeEvent(
   req
 ) {
   const signature =
+    req.tributeSignature ||
+    req.headers["trbt-signature"] ||
     req.headers["x-tribute-signature"] ||
     req.headers["x-tribute-signature-sha256"] ||
     "";
@@ -693,16 +724,8 @@ async function processTributeEvent(
       JSON.stringify(req.body || {})
     );
 
-  if (
-    TRIBUTE_API_KEY &&
-    !verifyTributeSignature(
-      rawBody,
-      signature
-    )
-  ) {
-    console.error(
-      "Tribute webhook signature verification failed"
-    );
+  if (!verifyTributeSignature(rawBody, signature)) {
+    throw new Error("Tribute webhook signature verification failed");
   }
 
   const body =
@@ -2188,6 +2211,7 @@ app.post(
 
 app.post(
   "/tribute-webhook",
+  requireValidTributeSignature,
   (req, res) => {
     res.status(200).json({
       ok: true
@@ -2216,6 +2240,7 @@ app.post(
 
 app.post(
   "/tribute/webhook",
+  requireValidTributeSignature,
   (req, res) => {
     res.status(200).json({
       ok: true
