@@ -5,6 +5,7 @@ import pg from "pg";
 const { Pool } = pg;
 const app = express();
 const API_STAGING_ONLY = process.env.API_STAGING_ONLY === "true";
+const API_STAGING_DB_PROBE = process.env.API_STAGING_DB_PROBE === "true";
 
 const SUPPORT_CHAT_ID = -1003889367656;
 const supportMode = new Set();
@@ -52,6 +53,7 @@ app.use(express.json({
 app.use((req, res, next) => {
   if (!API_STAGING_ONLY) return next();
   if (req.method === "GET" && ["/", "/api/health"].includes(req.path)) return next();
+  if (API_STAGING_DB_PROBE && req.method === "GET" && req.path === "/api/staging/db-probe") return next();
   return res.sendStatus(503);
 });
 
@@ -106,7 +108,8 @@ let pool = null;
 if (process.env.DATABASE_URL) {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: API_STAGING_ONLY && API_STAGING_DB_PROBE ? 5000 : 0
   });
   console.log("PostgreSQL configured through DATABASE_URL");
 } else if (
@@ -119,7 +122,8 @@ if (process.env.DATABASE_URL) {
     database: process.env.PGDATABASE,
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: API_STAGING_ONLY && API_STAGING_DB_PROBE ? 5000 : 0
   });
   console.log("PostgreSQL configured through PG variables");
 } else {
@@ -2180,6 +2184,22 @@ app.get(
       service:
         "84-days"
     });
+  }
+);
+
+app.get(
+  "/api/staging/db-probe",
+  async (req, res) => {
+    if (!API_STAGING_ONLY || !API_STAGING_DB_PROBE) return res.sendStatus(404);
+    if (!pool) return res.sendStatus(503);
+
+    try {
+      const result = await pool.query("SELECT 1 AS probe");
+      if (result.rows[0]?.probe !== 1) return res.sendStatus(503);
+      return res.json({ ok: true, database: "reachable" });
+    } catch {
+      return res.sendStatus(503);
+    }
   }
 );
 
